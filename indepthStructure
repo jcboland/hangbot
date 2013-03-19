@@ -1,0 +1,139 @@
+/*
+ 
+HangBot Structure
+
+main.c // This is the main file of the code that organizes the operation of the program. 
+	
+	
+	// Setup and Initialization
+
+	main.c --> protocol_init() // This method is called from the protocol.c library. 
+				-sets up the Serial Connection
+	
+	main.c --> settings_init() // Initializes the settings for the structure of the code
+									-Checks to make sure the settings are working fine
+									-If they are running properly it displays the message "$ to dump settings"
+				
+			settings_init() --> read_settings() // Checks the version of eeprom; the eeprom is the location where the settings are stored once the controller is turned 
+							    uint8_t version = eeprom_get_char(0); // Gets the version number of the eeprom
+						
+					read_settings() --> memcpy_from_eeprom_with_checksum() // Reads settings - records and checks checksum
+
+	
+			settings_init() --> settings_reset() // Sets all the parameters back to the default global variables. 
+
+			settings_init() --> write_settings() // Print the message: "Stored new settings"
+
+			settings_init() --> settings_dump() // Prints a list of all the stored settings.
+	
+	main.c --> plan_init() // Initializes the planner variables.
+
+	main.c --> st_init() // Initializes the stepper
+
+	main.c --> spindle_init() // Initializes the spindle
+		
+			spindle_init() --> spindle_run() // Starts the spindle
+
+	main.c --> gc_init() // Initializes the GCode
+
+	main.c --> limits_init() // Initializes the limits
+
+	
+	// FOR LOOP 
+
+	main.c --> sleep_mode() // 
+ 
+	main.c --> protocol_process() // The main operation of the code that reads the GCode through the Serial port and interprets it
+				
+			protocol_process() --> serialRead() // Reads the line of GCode commands	
+												// Runs through each incoming character and sorts it into three categories:
+														1. a whitespace - do nothing
+														2. a lowercase letter - replaces it an uppercase letter and places it in the next spot in the array 'line'
+														3. anything else - adds it to the next spot in the array 'line'
+												// If it has reached the end of the line, it takes the array 'line' 
+												// and passes it through to the method protocol_execute_line().
+
+						// If (the end of the line has been reached){
+								--> put a '0' at the end of the line
+								--> protocol_execute_line(line) 		// Sends the string of characters 
+
+						// elseif(there is a whitespace){
+								--> Do nothing
+							}
+						// elseif(there is a lowercase letter between 'a' and 'z'){
+								--> At the place of the next letter in the array 'line', remove the lowercase letter and place an uppercase one 
+						// else { 
+								-->otherwise, just place the character that is recieved over the Serial input, as the next character in the array 'line'
+ 
+
+			protocol_process() --> protocol_execute_line() // Determines whether it is a line of gcode, or if the user wants to view the settings
+						// If (there is a '$' a the beginning of the code)
+								--> settings_execute_line(line) // 
+										// If(the first character in the string is not '$'){
+												--> return "STATUS_UNSUPPORTED_STATEMENT"
+											}
+										// If(the second character in position "1" is a zero, which is why we added a zero to the end of 'line'){
+												--> settingsDump() // Spit out a list of all the current settings
+												--> return "STATUS_OK"
+											}
+										// If(the format is not correct){				// Not totally sure what readDouble() is doing - Look at nuts_bolts.c
+												--> return "STATUS_BAD_NUMBER_FORMAT"
+											}
+										// If([assuming that the first char was '$'] the next char in the array is not '='){
+												--> return "STATUS_UNSUPPORTED_STATEMENT"
+											}
+										// If(the format is not correct){				// Not totally sure what readDouble() is doing - Look at nuts_bolts.c
+												--> return "STATUS_BAD_NUMBER_FORMAT"
+											}
+										--> settings_store_setting(parameter, value) // When the char has passes through all the if statements
+																					 // store the settings specified by parameter and value
+							}
+						//else{
+								-->gc_execute_line(line)  // If it didn't start with a '$' then it is going to be gcode 
+														  // so send the array 'line' to the 'gc_execute_line' method
+													      // Executes one line of 0-terminated G-Code. The line is assumed to contain only uppercase
+														  // characters and signed floating point values (no whitespace).
+								gc_execute_line() --> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*/
